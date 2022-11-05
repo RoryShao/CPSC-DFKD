@@ -10,7 +10,6 @@ import torch.optim as optim
 import torch.nn.functional as F
 from utils.log_util import Logger
 from dataloader import get_dataloader
-from warmup_scheduler import GradualWarmupScheduler
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -23,7 +22,7 @@ def train(args, model, device, train_loader, optimizer, cur_epoch, log):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
-        pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+        pred = output.argmax(dim=1, keepdim=True)
         correct += pred.eq(target.view_as(pred)).sum().item()
 
         loss = F.cross_entropy(output, target)
@@ -45,8 +44,8 @@ def test(args, model, device, test_loader, cur_epoch, log):
                 print('test image:', data.shape)
             data, target = data.to(device), target.to(device)
             output = model(data)
-            test_loss += F.cross_entropy(output, target, reduction='sum').item() # sum up batch loss
-            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            test_loss += F.cross_entropy(output, target, reduction='sum').item()
+            pred = output.argmax(dim=1, keepdim=True)
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
@@ -82,8 +81,7 @@ def main():
                         help='input batch size for training (default: 64)')
     parser.add_argument('--test_batch_size', type=int, default=128, metavar='N',
                         help='input batch size for testing (default: 1000)')
-    # parser.add_argument('--data_root', type=str, default=r'/data/rrshao/datasets/tiny-imagenet')
-    parser.add_argument('--data_root', type=str, default=r'/data/rrshao/datasets/tiny-imagenet')
+    parser.add_argument('--data_root', type=str, default=r'/data/xxx/datasets/tiny-imagenet')
     parser.add_argument('--epochs', type=int, default=100, metavar='N',
                         help='number of epochs to train (default: 10)')
     parser.add_argument('--learning_rate', type=float, default=0.1, metavar='LR',
@@ -144,22 +142,16 @@ def main():
     optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay, momentum=args.momentum)
     best_acc = 0
     if args.scheduler:
-        # scheduler = optim.lr_scheduler.StepLR(optimizer, args.step_size, 0.1)
-        # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, [20, 50], 0.1)
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
-        # scheduler_warmup = GradualWarmupScheduler(optimizer, multiplier=1, total_epoch=10, after_scheduler=scheduler)
-        # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.98)
-        # scheduler_warmup = WarmupLR(scheduler, init_lr=0.001, num_warmup=-1, warmup_strategy='linear')
+
     if args.test_only:
         acc = test(args, model, device, test_loader, 0, log)
         print(acc)
         return
 
     for epoch in range(1, args.epochs + 1):
-        # adjust_learning_rate(args, optimizer, epoch)
         if args.scheduler:
             scheduler.step()
-            # scheduler_warmup.step(epoch)
         print("Lr = %.6f"%(optimizer.param_groups[0]['lr']))
         train(args, model, device, train_loader, optimizer, epoch, log)
         acc = test(args, model, device, test_loader, epoch, log)
@@ -167,6 +159,7 @@ def main():
             best_acc = acc
             torch.save(model.state_dict(),"checkpoint/teacher/add_%s-%s.pt" % (args.dataset, args.model))
     log.logger.info('Best Acc={:.2f}'.format(best_acc * 100.))
+
 
 if __name__ == '__main__':
     main()
