@@ -6,7 +6,6 @@ This repository is the core code of 'Conditional pseudo-supervised contrast for 
 
 ```python
 python train_teacher.py  --gpu_id 0 --batch_size 32 --dataset cifar100 --model resnet34 --num_classes 100 --data_root /xxx/cifar100
-
 ```
 
 ### Step 2. Train the student on Cifar100 dataset by distillation.
