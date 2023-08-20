@@ -7,8 +7,7 @@ class DeepInversionFeatureHook():
     '''
 
     def __init__(self, module):
-        self.hook = module.register_forward_hook(self.hook_fn)        # 递归
-
+        self.hook = module.register_forward_hook(self.hook_fn)        # 
     def hook_fn(self, module, input, output):
         # hook co compute deepinversion's feature distribution regularization
         nch = input[0].shape[1]

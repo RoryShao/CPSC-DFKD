@@ -184,7 +184,6 @@ class GeneratorC(nn.Module):
         # 8x
 
         self.conv_blocks4_0 = nn.ConvTranspose2d(ngf, ngf, 4, 2, 1, bias=False)
-        # self.conv_blocks4_1 = nn.BatchNorm2d(ngf)
         self.conv_blocks4_1 = CategoricalConditionalBatchNorm2d(num_classes, ngf, 0.8)
         self.conv_blocks4_2 = nn.LeakyReLU(slope, inplace=True)
         # 16x
@@ -197,7 +196,7 @@ class GeneratorC(nn.Module):
                 nn.init.normal_(m.weight, 0.0, 0.02)
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
-            # if isinstance(m, (nn.BatchNorm2d)):
+            # if isinstance(m, (CategoricalConditionalBatchNorm2d)):
             #     nn.init.normal_(m.weight, 1.0, 0.02)
             #     nn.init.constant_(m.bias, 0)
 
@@ -217,7 +216,6 @@ class GeneratorC(nn.Module):
         img = self.conv_blocks3_2(img)
         img = self.conv_blocks4_0(img)
         img = self.conv_blocks4_1(img, labels)
-        # img = self.conv_blocks4_1(img)
         img = self.conv_blocks4_2(img)
         img = self.conv_blocks5_0(img)
         img = self.conv_blocks5_1(img)
@@ -248,7 +246,6 @@ class GeneratorD(nn.Module):
         self.conv_blocks2_2 = nn.LeakyReLU(0.2, inplace=True)
         self.conv_blocks3_0 = nn.Conv2d(ngf, nc, 3, stride=1, padding=1)
         self.conv_blocks3_1 = nn.Tanh()
-        # self.conv_blocks3_2 = nn.BatchNorm2d(nc, affine=False)
         self.conv_blocks3_2 = CategoricalConditionalBatchNorm2d(num_classes, nc)
 
 
@@ -267,6 +264,5 @@ class GeneratorD(nn.Module):
         b2_2_img = self.conv_blocks3_0(img)
         img = self.conv_blocks3_1(b2_2_img)
         final_img = self.conv_blocks3_2(img, labels)
-        # final_img = self.conv_blocks2_5(img)
         return final_img
 
