@@ -157,7 +157,7 @@ def main():
         acc = test(args, model, device, test_loader, epoch, log)
         if acc>best_acc:
             best_acc = acc
-            torch.save(model.state_dict(),"checkpoint/teacher/add_%s-%s.pt" % (args.dataset, args.model))
+            torch.save(model.state_dict(),"checkpoint/teacher/%s-%s.pt" % (args.dataset, args.model))
     log.logger.info('Best Acc={:.2f}'.format(best_acc * 100.))
 
 

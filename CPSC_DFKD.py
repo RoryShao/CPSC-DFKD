@@ -205,7 +205,7 @@ def main():
     parser.add_argument('--no-cuda', action='store_true', default=False, help='disables CUDA training')
     parser.add_argument('--seed', type=int, default=1, metavar='S',
                         help='random seed (default: 1)')
-    parser.add_argument('--ckpt', type=str, default='checkpoint/teacher/cifar100_resnet34.pth')
+    parser.add_argument('--ckpt', type=str, default='checkpoint/teacher/cifar100-resnet34.pt')
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status')
     parser.add_argument('--nz', type=int, default=256)
@@ -252,9 +252,9 @@ def main():
     ''' Model setting '''
     '''  Teacher  '''
     if args.teacher == 'resnet34':
-        teacher = network.cmi_resnet.resnet34(num_classes=num_classes)
+        teacher = network.resnet.resnet34(num_classes=num_classes)
     elif args.teacher == 'vgg11':
-        teacher = network.cmi_vgg.vgg11_bn(num_classes=num_classes)
+        teacher = network.vgg.vgg11_bn(num_classes=num_classes)
     elif args.teacher == 'wrn_40_2':
         teacher = network.wresnet.wrn_40_2(num_classes=num_classes)
     else:
@@ -262,7 +262,7 @@ def main():
 
     '''  Student  '''
     if args.student == 'resnet18':
-        student = network.cmi_resnet.resnet18(num_classes=num_classes)
+        student = network.resnet.resnet18(num_classes=num_classes)
     elif args.student == 'wrn_16_2':
         student = network.wresnet.wrn_16_2(num_classes=num_classes)
     elif args.student == 'wrn_16_1':
