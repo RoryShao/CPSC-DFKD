@@ -2,8 +2,6 @@
 # 2019.07.24-Changed output of forward function
 # Huawei Technologies Co., Ltd. <foss@huawei.com>
 # taken from https://github.com/huawei-noah/Data-Efficient-Model-Compression/blob/master/DAFL/resnet.py
-# for comparison with DAFL
-
 
 import torch
 import torch.nn as nn
@@ -88,13 +86,9 @@ class ResNet(nn.Module):
         x = self.bn1(x)
         out = F.relu(x)
         out = self.layer1(out)
-        # print(out.shape)
         out = self.layer2(out)
-        # print(out.shape)
         out = self.layer3(out)
-        # print(out.shape)
         out = self.layer4(out)
-        # print(out.shape)
         out = F.adaptive_avg_pool2d(out, (1,1))
         feature = out.view(out.size(0), -1)
         out = self.linear(feature)
